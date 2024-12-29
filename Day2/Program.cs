@@ -20,7 +20,8 @@ public class Program
 
         foreach (var line in lines)
         {
-            if (IsSafe(line))
+            List<int> parts = line.Split(' ').Select(x => int.Parse(x)).ToList();
+            if (IsSafe(parts))
             {
                 safeReports++;
                 Console.WriteLine("Safe");
@@ -32,22 +33,39 @@ public class Program
         }
 
         Console.WriteLine($"Safe reports: {safeReports}");
+
+        int dampenedSafeReports = 0;
+
+        foreach (var line in lines)
+        {
+            List<int> parts = line.Split(' ').Select(x => int.Parse(x)).ToList();
+            if (IsDampenedSafe(parts))
+            {
+                dampenedSafeReports++;
+                Console.WriteLine("Dampened Safe");
+            }
+            else
+            {
+                Console.WriteLine("Dampened Unsafe");
+            }
+        }
+
+        Console.WriteLine($"Dampened Safe reports: {dampenedSafeReports}");
     }
 
-    private bool IsSafe(string line)
+    public bool IsSafe(List<int> parts)
     {
-        var parts = line.Split(' ');
 
-        bool increasing = int.Parse(parts[0]) < int.Parse(parts[1]);
+        bool increasing = parts[0] < parts[1];
 
         int minDiff = 1;
         int maxDiff = 3;
 
-        int n = parts.Length;
+        int n = parts.Count;
 
         for (int i = 1; i < n; i++)
         {
-            int diff = int.Parse(parts[i - 1]) - int.Parse(parts[i]);
+            int diff = parts[i - 1] - parts[i];
 
             if ((increasing && diff > 0) || (!increasing && diff < 0))
             {
@@ -63,5 +81,27 @@ public class Program
 
         return true;
 
+    }
+
+    public bool IsDampenedSafe(List<int> parts)
+    {
+        //If is safe by original rules, then it is safe by dampened rules
+        if (IsSafe(parts))
+        {
+            return true;
+        }
+
+        // Remove each of the elements one by one and check if it is safe
+        for (int i = 0; i < parts.Count; i++)
+        {
+            List<int> newParts = new List<int>(parts);
+            newParts.RemoveAt(i);
+            if (IsSafe(newParts))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
