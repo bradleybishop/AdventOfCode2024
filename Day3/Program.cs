@@ -33,5 +33,33 @@ public class Program
         }
 
         Console.WriteLine($"Total: {total}");
+
+        // Part 2
+        bool mulEnabled = true;
+        int total2 = 0;
+        regex = new Regex(@"mul\(\d*,\d*\)|do\(\)|don\'t\(\)", RegexOptions.IgnoreCase);
+        var matches2 = regex.Matches(input);
+
+        foreach(var match in matches2)
+        {
+            if (match.ToString().StartsWith("don\'t"))
+            {
+                mulEnabled = false;
+            }
+            else if (match.ToString().StartsWith("do"))
+            {
+                mulEnabled = true;
+            }
+            else if (mulEnabled)
+            {
+                List<int> numbers = match.ToString().Replace("mul(", "").Replace(")", "").Split(',').Select(x => int.Parse(x)).ToList();
+
+                total2 += numbers[0] * numbers[1];
+            }
+        }
+
+        Console.WriteLine($"Total 2: {total2}");
+
+
     }
 }
